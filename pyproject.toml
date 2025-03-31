@@ -1,0 +1,16 @@
+[project]
+name = "cck-agents"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "claudette>=0.1.4",
+    "fastcore>=1.8.0",
+    "ipykernel>=6.29.5",
+    "nbdev>=2.3.37",
+    "python-dotenv>=1.1.0",
+]
+
+[tool.uv.sources]
+claudette = { git = "https://github.com/KronResearch/claudette.git" }

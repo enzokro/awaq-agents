@@ -10,4 +10,4 @@ wheels/
 .venv
 .env
 .cursor
-references/
+project_references/

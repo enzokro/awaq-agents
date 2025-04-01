@@ -24,7 +24,7 @@ RAG agents are an instance of agents where:
 
 More generally, the models can use many different given tools in an arbitrary loop. 
 
-This is the key point where the magic happens: the models can weave the tools and make smart decisions about the best thing to do for the given input. With a well-thought out prompt structure (both (system + user) the models can  increase their computing resources by calling the needed tools, the needed amount of times, for a complex task. 
+This is the key point where the magic happens: the models can weave the tools and make smart decisions about the best thing to do for the given input. With a well-thought out prompt structure (both system + user) the models can  increase their computing resources by calling the needed tools, the needed amount of times, to complete a complex task. 
 
 Additionally, we also have the ability to set a "prefill" prompt before calling the tool loop. Prefilling is an incredibly powerful tool that allows us to directly steer a model's output. It basically bootstraps the model's response by *forcing* it to start with the given prefill prompt. Prefill is a fantastic and improvable way to better condition our agent's output.
 

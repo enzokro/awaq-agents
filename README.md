@@ -28,7 +28,7 @@ This is the key point where the magic happens: the models can weave the tools an
 
 Additionally, we also have the ability to set a "prefill" prompt before calling the tool loop. Prefilling is an incredibly powerful tool that allows us to directly steer a model's output. It basically bootstraps the model's response by *forcing* it to start with the given prefill prompt. Prefill is a fantastic and improvable way to better condition our agent's output.
 
-Their is also an implementation of the Anthropic [think tool](https://www.anthropic.com/engineering/claude-think-tool) that gives the model access to extra think space when needed. This feature thrives with good prompting for complex tasks.
+Their is also an implementation of the Anthropic [think tool](https://www.anthropic.com/engineering/claude-think-tool) that gives the model access to extra thinking space when needed. This feature excels with good prompting on complex tasks.
 
 Your interaction should look something like:
 ![Sample interaction](image.png)

@@ -10,6 +10,5 @@ wheels/
 .venv
 .env
 .cursor
-project_references/
 results/*.jsonl
 data/*

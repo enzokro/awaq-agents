@@ -12,3 +12,4 @@ wheels/
 .cursor
 results/*.jsonl
 data/*
+project_references/

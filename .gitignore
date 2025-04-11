@@ -16,3 +16,4 @@ data/*
 
 # Folders
 artifacts/
+ui/static/

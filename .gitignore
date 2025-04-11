@@ -15,7 +15,9 @@ data/*
 .sesskey
 
 # Folders
+pdfjs/*
 artifacts/
 ui/static/*
 ui/static/pdfjs/*
-pdfjs/
+ui/static/pdfjs/web/*
+

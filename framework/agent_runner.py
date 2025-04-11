@@ -24,11 +24,12 @@ class AgentRunner:
             profile: AgentProfile, 
             log_dir: str = "results", 
             run_name_prefix: str = "interactive",
-            use_toolloop: bool = True
+            use_toolloop: bool = True,
+            session_id: str = None
         ):
         """Initializes with a profile, sets up logging for the session."""
         self.profile = profile
-        self.session_id = str(uuid.uuid4())
+        self.session_id = session_id or str(uuid.uuid4())
         self.run_name = f"{run_name_prefix}_{self.profile.profile_id}_{self.session_id[:8]}"
         self.log_path = get_log_path(log_dir, self.run_name)
         self.use_toolloop = use_toolloop

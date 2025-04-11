@@ -12,3 +12,7 @@ wheels/
 .cursor
 results/*.jsonl
 data/*
+.sesskey
+
+# Folders
+artifacts/

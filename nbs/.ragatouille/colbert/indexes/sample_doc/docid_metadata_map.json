@@ -1,0 +1,952 @@
+{
+  "doc_0":{
+    "chunk_id":0,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=35.333333333333336 t=737.2233479817709 r=65.33333333333333 b=726.5566813151041 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_1":{
+    "chunk_id":1,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=265.3187879664763 t=674.5104991724752 r=448.6666666666667 b=647.2233479817709 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_2":{
+    "chunk_id":2,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/groups/0'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"list_item",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=177.66666666666666 t=628.5201992247341 r=540.6666666666666 b=582.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_3":{
+    "chunk_id":3,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=163.66666666666666 t=495.8438325058085 r=562.3333333333334 b=299.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_4":{
+    "chunk_id":4,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=165.0 t=287.8900146484375 r=445.6666666666667 b=273.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_5":{
+    "chunk_id":5,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=164.66666666666666 t=223.22334798177087 r=562.6666666666666 b=69.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_6":{
+    "chunk_id":6,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=34.0 t=386.2233479817708 r=151.33333333333334 b=281.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_7":{
+    "chunk_id":7,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=33.666666666666664 t=279.8900146484375 r=80.66666666666667 b=269.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_8":{
+    "chunk_id":8,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=35.333333333333336 t=262.5053646131547 r=140.64956109935017 b=250.60799801705366 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_9":{
+    "chunk_id":9,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=34.0 t=242.22334798177087 r=128.66666666666666 b=196.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_10":{
+    "chunk_id":10,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":1,
+    "prov_0_bounding_box":"l=34.0 t=160.22334798177087 r=153.33333333333334 b=67.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_11":{
+    "chunk_id":11,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.0 t=755.5566813151041 r=562.0 b=677.5566813151041 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_12":{
+    "chunk_id":12,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.33333333333334 t=617.5566813151041 r=562.6666666666666 b=540.2233479817708 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_13":{
+    "chunk_id":13,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.66666666666666 t=680.8900146484375 r=562.0 b=615.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_14":{
+    "chunk_id":14,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.66666666666666 t=540.8900146484375 r=562.3333333333334 b=477.5566813151042 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_15":{
+    "chunk_id":15,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.66666666666666 t=430.2233479817708 r=561.6666666666666 b=363.2233479817708 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_16":{
+    "chunk_id":16,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.66666666666666 t=480.2233479817708 r=562.0 b=425.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_17":{
+    "chunk_id":17,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.0 t=365.8900146484375 r=562.6666666666666 b=299.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_18":{
+    "chunk_id":18,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.33333333333334 t=302.22334798177087 r=561.6666666666666 b=250.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_19":{
+    "chunk_id":19,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.66666666666666 t=214.55668131510413 r=562.0 b=173.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_20":{
+    "chunk_id":20,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.66666666666666 t=140.55668131510413 r=562.0 b=98.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_21":{
+    "chunk_id":21,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":2,
+    "prov_0_bounding_box":"l=164.66666666666666 t=174.8900146484375 r=561.6666666666666 b=136.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_22":{
+    "chunk_id":22,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[RefItem(cref='#/texts/40')]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"table",
+    "prov_0_page_number":3,
+    "prov_0_bounding_box":"l=35.360958099365234 t=734.6209335327148 r=559.2257080078125 b=515.8768920898438 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_23":{
+    "chunk_id":23,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/tables/0'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"caption",
+    "prov_0_page_number":3,
+    "prov_0_bounding_box":"l=165.0 t=755.8900146484375 r=456.3333333333333 b=741.2233479817709 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_24":{
+    "chunk_id":24,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":3,
+    "prov_0_bounding_box":"l=165.0 t=515.2233479817708 r=561.6666666666666 b=473.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_25":{
+    "chunk_id":25,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":3,
+    "prov_0_bounding_box":"l=164.33333333333334 t=461.8900146484375 r=562.6666666666666 b=422.2233479817708 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_26":{
+    "chunk_id":26,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":3,
+    "prov_0_bounding_box":"l=164.0 t=336.5566813151042 r=561.6666666666666 b=271.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_27":{
+    "chunk_id":27,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":3,
+    "prov_0_bounding_box":"l=163.33333333333334 t=424.5566813151042 r=562.6666666666666 b=333.2233479817708 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_28":{
+    "chunk_id":28,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":3,
+    "prov_0_bounding_box":"l=164.66666666666666 t=273.8900146484375 r=562.3333333333334 b=235.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_29":{
+    "chunk_id":29,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":3,
+    "prov_0_bounding_box":"l=164.66666666666666 t=148.52352512282607 r=561.3333333333334 b=81.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_30":{
+    "chunk_id":30,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":3,
+    "prov_0_bounding_box":"l=163.33333333333334 t=236.55668131510413 r=563.0 b=144.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_31":{
+    "chunk_id":31,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":4,
+    "prov_0_bounding_box":"l=164.0 t=754.512780698121 r=559.6726577323728 b=726.2233479817709 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_32":{
+    "chunk_id":32,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[RefItem(cref='#/texts/51')]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"table",
+    "prov_0_page_number":4,
+    "prov_0_bounding_box":"l=165.623291015625 t=685.516845703125 r=559.4951171875 b=497.85211181640625 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_33":{
+    "chunk_id":33,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/tables/1'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"caption",
+    "prov_0_page_number":4,
+    "prov_0_bounding_box":"l=165.0 t=717.2233479817709 r=561.3333333333334 b=691.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_34":{
+    "chunk_id":34,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":4,
+    "prov_0_bounding_box":"l=164.66666666666666 t=498.8900146484375 r=561.6666666666666 b=449.2233479817708 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_35":{
+    "chunk_id":35,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":4,
+    "prov_0_bounding_box":"l=165.0 t=436.2233479817708 r=561.3333333333334 b=346.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_36":{
+    "chunk_id":36,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[RefItem(cref='#/texts/54')]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"table",
+    "prov_0_page_number":4,
+    "prov_0_bounding_box":"l=34.45380401611328 t=315.223876953125 r=559.5206909179688 b=88.11822509765625 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_37":{
+    "chunk_id":37,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/tables/2'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"caption",
+    "prov_0_page_number":4,
+    "prov_0_bounding_box":"l=165.0 t=335.8900146484375 r=559.6666666666666 b=321.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_38":{
+    "chunk_id":38,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":4,
+    "prov_0_bounding_box":"l=165.33333333333334 t=88.8900146484375 r=560.3333333333334 b=67.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_39":{
+    "chunk_id":39,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":5,
+    "prov_0_bounding_box":"l=164.0 t=755.5566813151041 r=562.0 b=676.5566813151041 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_40":{
+    "chunk_id":40,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[RefItem(cref='#/texts/59')]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"table",
+    "prov_0_page_number":5,
+    "prov_0_bounding_box":"l=35.12043762207031 t=632.9076538085938 r=559.3956298828125 b=418.6133117675781 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_41":{
+    "chunk_id":41,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/tables/3'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"caption",
+    "prov_0_page_number":5,
+    "prov_0_bounding_box":"l=165.33333333333334 t=667.2233479817709 r=561.6666666666666 b=640.5566813151041 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_42":{
+    "chunk_id":42,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":5,
+    "prov_0_bounding_box":"l=165.33333333333334 t=416.8900146484375 r=560.3333333333334 b=395.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_43":{
+    "chunk_id":43,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":5,
+    "prov_0_bounding_box":"l=164.66666666666666 t=268.55668131510413 r=562.0 b=153.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_44":{
+    "chunk_id":44,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":5,
+    "prov_0_bounding_box":"l=163.0 t=369.8900146484375 r=563.3333333333334 b=265.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_45":{
+    "chunk_id":45,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":6,
+    "prov_0_bounding_box":"l=164.33333333333334 t=174.22334798177087 r=562.0 b=83.55668131510413 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_46":{
+    "chunk_id":46,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":7,
+    "prov_0_bounding_box":"l=163.66666666666666 t=493.8900146484375 r=562.3333333333334 b=340.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_47":{
+    "chunk_id":47,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[RefItem(cref='#/texts/112')]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"table",
+    "prov_0_page_number":7,
+    "prov_0_bounding_box":"l=165.5511016845703 t=311.1368408203125 r=559.2407836914062 b=174.12823486328125 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_48":{
+    "chunk_id":48,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/tables/4'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"caption",
+    "prov_0_page_number":7,
+    "prov_0_bounding_box":"l=165.0 t=329.8900146484375 r=518.0 b=315.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_49":{
+    "chunk_id":49,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":7,
+    "prov_0_bounding_box":"l=165.33333333333334 t=175.55668131510413 r=279.6666666666667 b=161.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_50":{
+    "chunk_id":50,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":7,
+    "prov_0_bounding_box":"l=163.33333333333334 t=136.22334798177087 r=562.0 b=70.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_51":{
+    "chunk_id":51,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":8,
+    "prov_0_bounding_box":"l=163.66666666666666 t=754.2233479817709 r=561.6666666666666 b=688.5566813151041 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_52":{
+    "chunk_id":52,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":8,
+    "prov_0_bounding_box":"l=163.33333333333334 t=283.55668131510413 r=562.3333333333334 b=192.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_53":{
+    "chunk_id":53,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":8,
+    "prov_0_bounding_box":"l=165.0 t=196.8900146484375 r=563.3333333333334 b=155.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_54":{
+    "chunk_id":54,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[RefItem(cref='#/texts/198')]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"table",
+    "prov_0_page_number":9,
+    "prov_0_bounding_box":"l=34.11602020263672 t=721.165771484375 r=560.0808715820312 b=325.014892578125 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_55":{
+    "chunk_id":55,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/tables/5'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"caption",
+    "prov_0_page_number":9,
+    "prov_0_bounding_box":"l=165.33333333333334 t=755.2233479817709 r=561.0 b=731.2233479817709 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_56":{
+    "chunk_id":56,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":9,
+    "prov_0_bounding_box":"l=164.33333333333334 t=287.8900146484375 r=563.3333333333334 b=171.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_57":{
+    "chunk_id":57,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":9,
+    "prov_0_bounding_box":"l=163.33333333333334 t=172.8900146484375 r=562.6666666666666 b=70.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_58":{
+    "chunk_id":58,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":10,
+    "prov_0_bounding_box":"l=164.66666666666666 t=755.5566813151041 r=561.0 b=715.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_59":{
+    "chunk_id":59,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":10,
+    "prov_0_bounding_box":"l=163.33333333333334 t=678.8900146484375 r=562.3333333333334 b=476.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_60":{
+    "chunk_id":60,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":10,
+    "prov_0_bounding_box":"l=165.0 t=716.8900146484375 r=561.6666666666666 b=677.2233479817709 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_61":{
+    "chunk_id":61,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":10,
+    "prov_0_bounding_box":"l=163.33333333333334 t=477.5566813151042 r=562.6666666666666 b=350.2233479817708 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_62":{
+    "chunk_id":62,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":10,
+    "prov_0_bounding_box":"l=164.66666666666666 t=278.55668131510413 r=563.0 b=199.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_63":{
+    "chunk_id":63,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":10,
+    "prov_0_bounding_box":"l=164.66666666666666 t=352.5566813151042 r=562.6666666666666 b=276.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_64":{
+    "chunk_id":64,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":10,
+    "prov_0_bounding_box":"l=164.33333333333334 t=201.8900146484375 r=561.3333333333334 b=124.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_65":{
+    "chunk_id":65,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":10,
+    "prov_0_bounding_box":"l=164.66666666666666 t=126.8900146484375 r=563.0 b=87.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_66":{
+    "chunk_id":66,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":11,
+    "prov_0_bounding_box":"l=165.0 t=755.8900146484375 r=562.6666666666666 b=689.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_67":{
+    "chunk_id":67,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":11,
+    "prov_0_bounding_box":"l=164.66666666666666 t=628.8900146484375 r=562.6666666666666 b=551.2233479817708 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_68":{
+    "chunk_id":68,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":11,
+    "prov_0_bounding_box":"l=164.0 t=692.8900146484375 r=562.0 b=627.2233479817709 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_69":{
+    "chunk_id":69,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":11,
+    "prov_0_bounding_box":"l=163.66666666666666 t=554.2233479817708 r=561.3333333333334 b=450.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_70":{
+    "chunk_id":70,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":11,
+    "prov_0_bounding_box":"l=163.0 t=326.8900146484375 r=561.6666666666666 b=274.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_71":{
+    "chunk_id":71,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":11,
+    "prov_0_bounding_box":"l=164.66666666666666 t=454.2233479817708 r=562.6666666666666 b=324.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_72":{
+    "chunk_id":72,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":11,
+    "prov_0_bounding_box":"l=163.33333333333334 t=277.55668131510413 r=562.0 b=215.22334798177087 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_73":{
+    "chunk_id":73,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":11,
+    "prov_0_bounding_box":"l=163.33333333333334 t=214.22334798177087 r=562.6666666666666 b=112.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_74":{
+    "chunk_id":74,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":12,
+    "prov_0_bounding_box":"l=164.66666666666666 t=738.8900146484375 r=562.3333333333334 b=626.5566813151041 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_75":{
+    "chunk_id":75,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":12,
+    "prov_0_bounding_box":"l=163.66666666666666 t=587.5566813151041 r=562.0 b=434.5566813151042 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_76":{
+    "chunk_id":76,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":12,
+    "prov_0_bounding_box":"l=164.33333333333334 t=411.2233479817708 r=562.6666666666666 b=333.5566813151042 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_77":{
+    "chunk_id":77,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":12,
+    "prov_0_bounding_box":"l=165.0 t=436.8900146484375 r=561.0 b=410.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_78":{
+    "chunk_id":78,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":12,
+    "prov_0_bounding_box":"l=164.66666666666666 t=311.55668131510413 r=561.9296181273332 b=270.2596063621903 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_79":{
+    "chunk_id":79,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":12,
+    "prov_0_bounding_box":"l=164.66666666666666 t=247.22334798177087 r=561.6666666666666 b=182.26132086339328 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_80":{
+    "chunk_id":80,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":12,
+    "prov_0_bounding_box":"l=164.33333333333334 t=184.55668131510413 r=562.6666666666666 b=109.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_81":{
+    "chunk_id":81,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":13,
+    "prov_0_bounding_box":"l=163.76008855947688 t=739.8900146484375 r=562.3333333333334 b=611.2233479817709 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_82":{
+    "chunk_id":82,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":13,
+    "prov_0_bounding_box":"l=164.66666666666666 t=614.2233479817709 r=562.0 b=534.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_83":{
+    "chunk_id":83,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":13,
+    "prov_0_bounding_box":"l=163.66666666666666 t=514.8900146484375 r=562.6666666666666 b=346.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_84":{
+    "chunk_id":84,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":13,
+    "prov_0_bounding_box":"l=164.66666666666666 t=324.22334798177087 r=563.0 b=94.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_85":{
+    "chunk_id":85,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/groups/3'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"list_item",
+    "prov_0_page_number":14,
+    "prov_0_bounding_box":"l=35.0 t=409.5566813151042 r=41.666666666666664 b=402.2233479817708 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_86":{
+    "chunk_id":86,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":14,
+    "prov_0_bounding_box":"l=163.66666666666666 t=754.8900146484375 r=561.6666666666666 b=669.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_87":{
+    "chunk_id":87,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":14,
+    "prov_0_bounding_box":"l=164.33333333333334 t=654.8900146484375 r=561.6666666666666 b=605.5566813151041 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_88":{
+    "chunk_id":88,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":14,
+    "prov_0_bounding_box":"l=164.66666666666666 t=601.2233479817709 r=562.3333333333334 b=551.8900146484375 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_89":{
+    "chunk_id":89,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":14,
+    "prov_0_bounding_box":"l=165.0 t=547.8900146484375 r=560.3333333333334 b=523.5566813151042 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_90":{
+    "chunk_id":90,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":14,
+    "prov_0_bounding_box":"l=166.0 t=520.2233479817708 r=539.6666666666666 b=505.5566813151042 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_91":{
+    "chunk_id":91,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":14,
+    "prov_0_bounding_box":"l=164.66666666666666 t=502.8900146484375 r=561.0 b=476.2233479817708 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_92":{
+    "chunk_id":92,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":14,
+    "prov_0_bounding_box":"l=165.0 t=471.2233479817708 r=561.0 b=434.5566813151042 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_93":{
+    "chunk_id":93,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/groups/6'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"list_item",
+    "prov_0_page_number":15,
+    "prov_0_bounding_box":"l=34.666666666666664 t=753.5566813151041 r=562.3333333333334 b=729.5566813151041 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  },
+  "doc_94":{
+    "chunk_id":94,
+    "file":"sample_doc.pdf",
+    "parent":"cref='#/body'",
+    "children":"[]",
+    "content_layer":"ContentLayer.BODY",
+    "label":"text",
+    "prov_0_page_number":17,
+    "prov_0_bounding_box":"l=33.0 t=671.8900146484375 r=561.3333333333334 b=633.2233479817709 coord_origin=<CoordOrigin.BOTTOMLEFT: 'BOTTOMLEFT'>"
+  }
+}

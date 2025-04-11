@@ -2,7 +2,8 @@
 from dotenv import load_dotenv
 
 # Attempt to import necessary components
-from profiles.agents.example_agent.agent import profile as agent_profile
+# from profiles.agents.example_agent.agent import profile as agent_profile
+from profiles.agents.simple_pdf_rag_agent.agent import profile as agent_profile
 from framework.agent_runner import AgentRunner
 
 # Load environment variables

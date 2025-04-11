@@ -1,0 +1,10 @@
+,Patient Groups Patient Groups,INR INR,Creatinine Creatinine
+0,Total group Total group,0.471; p < 0.001 r = 0.471; p < 0.001,r = 0.326; p < 0.05 r = 0.326; p < 0.05
+1,Total severely affected group Total severely affected group,0.398; p < 0.001 r = 0.398; p < 0.001,r = 0.379; p < 0.05 r = 0.379; p < 0.05
+2,Total moderately affected group Total moderately affected group,0.456; p < 0.05 r = 0.456; p < 0.05,NS NS
+3,Males,NS,NS
+4,Males Severely affected males,NS NS,NS NS
+5,Severely affected males Moderately males Moderately affected males,NS r = 0.600; p < 0.05,NS NS
+6,affected Females,= 0.600; p < 0.05 r = 0.567; p < 0.01,NS r = 0.385; p < 0.05
+7,Females Severely affected females,= 0.567; p < 0.01 NS,r = 0.385; p < 0.05 r = 0.534; p < 0.05
+8,Severely affected females Moderately affected females,NS r = 0.570; p < 0.05,r = 0.534; p < 0.05 NS

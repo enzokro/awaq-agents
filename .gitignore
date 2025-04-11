@@ -16,4 +16,6 @@ data/*
 
 # Folders
 artifacts/
-ui/static/
+ui/static/*
+ui/static/pdfjs/*
+pdfjs/

@@ -17,6 +17,7 @@ data/*
 # Folders
 pdfjs/*
 artifacts/
+ui/database/*.db*
 ui/static/*
 ui/static/pdfjs/*
 ui/static/pdfjs/web/*

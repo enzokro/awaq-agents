@@ -13,6 +13,8 @@ import traceback
 import sys
 sys.path.append("/Users/cck/projects/cck-agents/")
 
+ARTIFACTS_DIR = Path("/Users/cck/projects/cck-agents/artifacts")
+
 ### AGENT 
 from dotenv import load_dotenv
 load_dotenv()
@@ -23,12 +25,17 @@ from profiles.agents.simple_pdf_rag_agent.agent import profile as agent_profile
 # from profiles.agents.document_summarizer.agent import profile as summarizer_profile
 from framework.agent_runner import AgentRunner
 
-
 # runner = AgentRunner(
 #     profile=agent_profile,
 #     # use_toolloop=False,
 # )
+### /AGENT
 
+### EMBEDDINGS
+from framework.embeddings import embed_docling_json
+from framework.documents import parse_document, convert
+
+### /EMBEDDINGS
 ### Helpers
 
 def generate_file_id() -> str:
@@ -784,6 +791,16 @@ async def post(auth=None, file: List[UploadFile] = None, request=None):
         if not (content_type.startswith('image/') or content_type == 'application/pdf'):
             continue
         
+        # set the output path
+        output_path = ARTIFACTS_DIR / file_id
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        # parse the document
+        document = parse_document(content, output_path)
+
+        # embed the document
+        embed_docling_json(document, output_path / f"embeddings")
+        
         # Create basic metadata
         file_data = {
             'id': file_id,
@@ -839,16 +856,12 @@ def send_message(message: str, auth=None, session=None):
     
     auth = "cck"
 
-    # manually create a chat here
-    chat_id = generate_file_id()
-    session['chat_id'] = chat_id
-
     if 'auth' not in session:
         session['auth'] = auth
+
     if 'chat_id' not in session:
         chat_id = generate_file_id()
         session['chat_id'] = chat_id
-
     else:
         chat_id = session['chat_id']
         chat.session_id = chat_id

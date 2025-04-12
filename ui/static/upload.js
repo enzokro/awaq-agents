@@ -95,22 +95,41 @@ function uploadFiles(files) {
     xhr.addEventListener('load', () => {
         if (xhr.status >= 200 && xhr.status < 300) {
             // Success
-            statusText.textContent = 'Upload complete!';
+            statusText.textContent = 'Upload complete! Processing document, please wait...';
+
+            // Keep progress bar visible but change to indeterminate style
+            progressBar.removeAttribute('value'); // Makes it indeterminate
+
+            // Don't hide the progress container - it now indicates processing
+            // Instead, the FileItem component will handle the processing state
             
-            // Hide progress after a delay
+            // // Hide progress after a delay
+            // setTimeout(() => {
+            //     progressContainer.classAdd('hidden');
+            //     progressBar.value = 0;
+                
+            //     // Always reset and ensure file input is hidden
+            //     fileInput.value = '';
+            //     fileInput.classAdd('hidden');
+                
+            //     // Trigger the uploaded event to refresh file list
+            //     // This uses the HTMX attributes we set in the HTML
+            //     dropzone.send('uploaded');
+                
+            // }, 1000);
+
+            // Always reset file input
+            fileInput.value = '';
+            fileInput.classAdd('hidden');
+            
+            // Trigger the uploaded event to refresh file list
+            // The file list will now show items with processing status
+            // KEY FIX: Add a small delay before triggering the file list refresh
             setTimeout(() => {
-                progressContainer.classAdd('hidden');
-                progressBar.value = 0;
-                
-                // Always reset and ensure file input is hidden
-                fileInput.value = '';
-                fileInput.classAdd('hidden');
-                
                 // Trigger the uploaded event to refresh file list
-                // This uses the HTMX attributes we set in the HTML
                 dropzone.send('uploaded');
-                
-            }, 1000);
+            }, 300); // 300ms delay gives server time to persist the file
+
         } else {
             // Error
             statusText.textContent = 'Upload failed';

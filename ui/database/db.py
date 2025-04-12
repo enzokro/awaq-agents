@@ -27,6 +27,7 @@ from dataclasses import field
 class ChatMessage:
     id: str = None
     chat_id: str = None
+    file_id: str = None
     role: str = "user"
     content: str = ""
     created_at: float = 0
@@ -208,6 +209,11 @@ def get_chat(chat_id: str) -> Optional[ChatMessage]:
 def get_chat_messages(chat_id: str) -> Union[List[ChatMessage], List]:
     """Get all messages for a specific chat."""
     return chats(f"chat_id = ?", [chat_id], order_by='created_at ASC')
+
+def get_messages(file_id: str, chat_id: str) -> Union[List[ChatMessage], List]:
+    """Get all messages for a specific chat."""
+    return chats(f"file_id = ? AND chat_id = ?", [file_id, chat_id], order_by='created_at ASC')
+
 
 def get_user_chats(username) -> Union[List[ChatMessage], List]:
     """Get all chats for a specific user."""

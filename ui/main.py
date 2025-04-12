@@ -1,13 +1,16 @@
 import uuid
 import time
 import mimetypes
+import asyncio
 import json
+from io import BytesIO
 from pathlib import Path
 from fastcore.xtras import *
 from fasthtml.common import *
 from monsterui.all import * 
 from database.db import *
 import traceback
+from docling.datamodel.base_models import DocumentStream
 
 # manually hook in the path for now
 import sys
@@ -25,15 +28,21 @@ from profiles.agents.simple_pdf_rag_agent.agent import profile as agent_profile
 # from profiles.agents.document_summarizer.agent import profile as summarizer_profile
 from framework.agent_runner import AgentRunner
 
-# runner = AgentRunner(
-#     profile=agent_profile,
-#     # use_toolloop=False,
+chat = AgentRunner(
+    profile=agent_profile,
+    use_toolloop=True,
+)
+
+# summarizer = AgentRunner(
+#     profile=summarizer_profile,
+#     use_toolloop=True,
 # )
+
 ### /AGENT
 
 ### EMBEDDINGS
-from framework.embeddings import embed_docling_json
-from framework.documents import parse_document, convert
+from framework.embeddings import embed_docling_json, RAGEmbeds
+from framework.documents import parse_document_bytes, convert
 
 ### /EMBEDDINGS
 ### Helpers
@@ -91,12 +100,18 @@ pdf_scripts = [
     Script(src='/static/pdfjs-helpers/pdf-initializer.js', type="module"),
 ]
 
+# for helper scripts
+helper_scripts = [
+    Script(src='/static/helpers.js'),
+]
+
 
 hdrs = [
     theme_headers, 
     full_screen_style, 
     favicon_headers,
     *pdf_scripts,
+    # *helper_scripts,
 ]
 
 # create the app
@@ -165,10 +180,12 @@ def ChatMessageUI(role, content):
         )
     )
 
-def create_chat_messages_ui(messages: list[dict]=[]):
+def create_chat_messages_ui(file_id: str = None, chat_id: str = None):
     """Creates a structured chat messages container with proper empty state handling"""
     
     # Determine if we're in empty state or have messages
+    messages = get_messages(file_id, chat_id)
+    print(f"messages: {messages}")
     is_empty = not messages
     
     # Prepare message content
@@ -176,14 +193,14 @@ def create_chat_messages_ui(messages: list[dict]=[]):
         # Empty state content
         DivCentered(
             UkIcon('message-circle', cls='text-muted-foreground opacity-40 mb-3', height=40, width=40),
-            P("Ask questions about your document", cls=TextPresets.muted_lg),
+            P("Interact with your document", cls=TextPresets.muted_lg),
             cls="flex-col",
             id="empty-placeholder"  # Specific ID for the placeholder content
         ) if is_empty else
         # Message list content - when messages exist
         Div(
-            *[ChatMessageUI(msg["role"], msg["content"]) for msg in messages],
-            cls="space-y-4"
+            *[ChatMessageUI(msg.role, msg.content) for msg in messages],
+            cls="h-full space-y-4"
         )
     )
     
@@ -191,14 +208,20 @@ def create_chat_messages_ui(messages: list[dict]=[]):
     return Div(
         message_content,
         id="message-list",  # Single container for both states
-        cls=f"h-full {'' if is_empty else 'space-y-4 pb-4'}"
+        cls=f"{'' if is_empty else 'space-y-4 pb-4'}"
     )
     
-def create_chat_input():
+def create_chat_input(file_id: str = None):
     """Creates an enhanced chat input that handles state transitions efficiently"""
     return Card(
         Form(
             DivHStacked(
+                Input(
+                    type="hidden",
+                    name="file_id",
+                    id="file-id",
+                    value=file_id,
+                ),
                 TextArea(
                     id="message", 
                     placeholder="Ask about your document...", 
@@ -334,6 +357,10 @@ def FileItem(file: FileModel) -> FT:
     display_name = file.name
     if len(display_name) > 18:
         display_name = display_name[:15] + '...'
+
+    # Add processing indicator
+    is_processing = getattr(file, 'status', None) == 'processing'
+
     
     return Div(
         # First row: Filename and icon
@@ -359,24 +386,31 @@ def FileItem(file: FileModel) -> FT:
                     cls=ButtonT.ghost + ' text-xs px-2 py-1 h-7 text-default border rounded-md',
                     hx_delete=f'/files/{file.id}',
                     hx_confirm=f'Are you sure you want to delete {file.name}?',
-                    hx_target='#file-list'
+                    hx_target='#file-list',
+                    disabled=is_processing,
                 ),
                  cls='mt-2 space-x-1'
             ),
             DivRAligned(
+                # Show spinner during processing
+                Loading(cls=LoadingT.spinner + " mr-2") if is_processing else None,
+                P("Processing...", cls=TextPresets.muted_sm) if is_processing else None,
+            
                 Button(
                     UkIcon('download', height=14, width=14), 
                     cls=ButtonT.secondary + ' text-xs px-2 py-1 h-7 border rounded-md',
                     hx_get=f'/files/{file.id}/download',
-                    hx_target='_blank'
+                    hx_target='_blank',
+                    disabled=is_processing,
                 ),
                 Button(
                     'Interact', 
-                    cls=ButtonT.primary + ' text-md px-2 py-1 h-7 border rounded-md' + (' text-default' if file.is_viewable else ' text-muted'),
+                    cls=ButtonT.primary + ' text-lg px-2 py-1 h-7 border rounded-md',
                     hx_get=f'/files/interact/{file.id}',
-                    hx_target='#file-viewer',
+                    hx_target='#main-content',
                     hx_swap="innerHTML",
-                    disabled=not file.is_viewable,
+                    hx_push_url='true',
+                    disabled=is_processing,
                     # onclick="switchTab(1); setTimeout(function() { resetLayout(); }, 100);",
                 ),
                 cls="mt-2 space-x-2"
@@ -385,7 +419,16 @@ def FileItem(file: FileModel) -> FT:
         
         id=f'file-{file.id}',
         cls='file-item p-3 hover:bg-secondary border border-slate-200 rounded-md mb-2',
+        # Add polling for processing status
+        hx_get=f'/files/{file.id}/status' if is_processing else None,
+        hx_trigger="every 4s" if is_processing else None,
+        hx_swap="outerHTML",
     )
+
+@patch
+def __ft__(self:FileModel):
+    """Render FileModel as FT component for HTMX updates"""
+    return FileItem(self)
 
 def FileListSection(auth, request=None) -> FT:
     """
@@ -474,6 +517,17 @@ def ViewerToolbar(file_id: str = None) -> FT:
 
     # Main toolbar content
     toolbar_main = DivFullySpaced(
+        Button(
+            DivHStacked(
+                UkIcon('arrow-big-left', height=20, width=20, cls=""), 
+                "Back to Files",
+            ),
+            cls=ButtonT.secondary + "border-2 border-primary rounded-md px-2",
+            hx_get='/',
+            hx_target='body',
+            hx_push_url='true'
+        ),
+
         H3(file_meta.name if file_meta else 'File Viewer', id='viewer-title'),
 
         DivHStacked(
@@ -491,7 +545,7 @@ def ViewerToolbar(file_id: str = None) -> FT:
                     UkIcon('pencil', width=20, height=20),
                     P("Annotate"),
                 ), 
-                cls=ButtonT.default + ' rounded-md', 
+                cls=ButtonT.default + ' border-2 border-primary rounded-md', 
                 id='create-annotation-btn',
                 disabled=not file_meta,
                 title="Create Custom Annotation",
@@ -680,15 +734,89 @@ def ViewerContent(file_id: str = None):
 
     return CardBody(*res, id="viewer-content")
 
-def FileViewerSection(file_id=None):
-    """File viewer section that can display various file types."""
+def InteractionPanel(file_id, chat_id):
+    """
+    Enhanced interaction panel with chat and history tabs.
+    Preserves existing container structure and height calculations.
+    """
     return Div(
-        ViewerToolbar(file_id),
-        ViewerContent(file_id),
-        id='file-viewer',
-        cls='flex-1 overflow-hidden rounded-lg h-full',
+        # Header with tabs integration
+        DivFullySpaced(
+            TabContainer(
+                Li(
+                    A("Current Chat",
+                      href="#current-chat",
+                      cls="rounded-md"),
+                cls="uk-active"
+                ),
+                Li(
+                    A("Chat History", 
+                     href="#chat-history", 
+                     cls="rounded-md",
+                     hx_get=f"/files/{file_id}/chat-history",
+                     hx_target="#chat-history",
+                     hx_swap="innerHTML",
+                     )
+                ),
+                uk_switcher="connect: #tab-content",
+            ),
+            DivRAligned(
+                Button("New Chat", 
+                    cls=ButtonT.primary + " rounded-md",
+                    hx_get=f"/files/{file_id}/new-chat",
+                    hx_target="#current-chat",
+                    hx_swap="innerHTML",
+                ),
+            ),
+            cls="p-3 border-b bg-secondary sticky top-0 z-20"
+        ),
+        
+        # Content area with switcher container
+        Div(
+            Div(id="tab-content", cls="uk-switcher h-full")(
+                # Tab 1: Current chat - preserve existing structure and IDs
+                Div(
+                    # Messages container with explicit height calculation
+                    Div(
+                        create_chat_messages_ui(file_id, chat_id), 
+                        id="chat-container", 
+                        cls="overflow-y-auto p-3 h-[calc(100vh-200px)]"
+                    ),
+                    
+                    # Input area positioned at bottom - preserved from original
+                    create_chat_input(file_id),
+                    
+                    cls="flex flex-col h-[calc(100vh-60px)]",
+                    id="current-chat",
+                ),
+                
+                # Tab 2: Chat history
+                Div(
+                    DivCentered(
+                        UkIcon('history', cls='text-muted-foreground opacity-40 mb-3', height=32, width=32),
+                        P("Select a previous conversation", cls=TextPresets.muted_lg),
+                        cls="h-[calc(100vh-210px)] flex-col"
+                    ),
+                    cls="flex flex-col h-[calc(100vh-60px)]",
+                    id="chat-history",
+                )
+            ),
+            cls="flex flex-col h-[calc(100vh-60px)]"
+        ),
+        cls='col-span-1 flex flex-col border shadow-md rounded-md z-10 bg-background',
     )
 
+def FileViewerSection(file_id=None, chat_id=None):
+    """File viewer section that can display various file types."""
+    return Title(app_name), Div(
+        ViewerToolbar(file_id),  # Reused with back button
+        Grid(
+            Div(ViewerContent(file_id), cls="col-span-3"),
+            Div(InteractionPanel(file_id, chat_id), cls="col-span-2"),
+            cols_xl=5, cols_lg=5, cols_md=5, cols_sm=1,
+            cls="h-[calc(100vh-64px)]"
+        )
+    )
 
 ### ROUTES
 
@@ -794,12 +922,6 @@ async def post(auth=None, file: List[UploadFile] = None, request=None):
         # set the output path
         output_path = ARTIFACTS_DIR / file_id
         output_path.mkdir(parents=True, exist_ok=True)
-
-        # parse the document
-        document = parse_document(content, output_path)
-
-        # embed the document
-        embed_docling_json(document, output_path / f"embeddings")
         
         # Create basic metadata
         file_data = {
@@ -808,28 +930,23 @@ async def post(auth=None, file: List[UploadFile] = None, request=None):
             'size': len(content),
             'type': content_type,
             'upload_time': time.time(),
-            'data': None,
-            'path': None,
+            'data': content or None,
+            'path': str(output_path),
             'username': user_id,  # Use the user ID, not display name
+            'status': 'processing',
         }
         
-        # Determine storage strategy based on file size
-        if len(content) < MAX_DB_SIZE:
-            # Small file - store directly in the database
-            file_data['data'] = content
-        else:
-            # Large file - store on disk and reference path in database
-            file_path = str(UPLOAD_DIR / file_id)
-            Path(file_path).write_bytes(content)
-            file_data['path'] = file_path
         
         # Insert into database
         try:
             # Use FastLite's insert method
             file_meta = files.insert(file_data)
-            
             # Add to responses
             responses.append(FileItem(file_meta))
+
+            # Start processing asynchronously
+            asyncio.create_task(process_document(content, file_id, output_path, file_meta))
+      
         except Exception as e:
             # Log the error for debugging
             print(f"Error inserting file into database: {e}")
@@ -839,22 +956,51 @@ async def post(auth=None, file: List[UploadFile] = None, request=None):
     # return responses
     return responses
 
-chat = AgentRunner(
-    profile=agent_profile,
-    use_toolloop=True,
-)
+async def process_document(content, file_id, output_path, file_meta):
+    """Extracts the text and figures from a PDF, then embeds the text for now with late chunking."""
+    try:
+        # Create a BytesIO object from the bytes
+        buf = BytesIO(content)
 
-# summarizer = AgentRunner(
-#     profile=summarizer_profile,
-#     use_toolloop=True,
-# )
+        # Create a DocumentStream with a name and the BytesIO stream
+        doc = DocumentStream(name="document.pdf", stream=buf)
+
+        # parse the document
+        document = parse_document_bytes(
+            doc,
+            file_id,
+            output_path,
+        )
+        print(f"Document parsed for file {file_id}")
+
+        # embed the document
+        embed_docling_json(document, output_path / f"embeddings")
+        print(f"Embeddings saved for file {file_id}")
+
+        # make file is ready
+        file_meta.status = 'ready'
+        files.update(file_meta)
+
+    except Exception as e:
+        print(f"Error processing document: {traceback.format_exc()}")
+        file_meta.status = 'error'
+        files.update(file_meta)
+
+
+@rt('/files/{file_id}/status')
+def get(file_id: str):
+    file_meta = get_file(file_id)
+    if not file_meta:
+        return Div(P("File not found", cls="text-error"), id=f'file-{file_id}')
+    return FileItem(file_meta)
+    
 
 @rt('/send', methods=['POST'])
-def send_message(message: str, auth=None, session=None):
+def send_message(message: str, file_id: str = None, auth=None, session=None):
     if not message.strip():
         return Div()
     
-    auth = "cck"
+    auth = "cck"    
 
     if 'auth' not in session:
         session['auth'] = auth
@@ -864,14 +1010,20 @@ def send_message(message: str, auth=None, session=None):
         session['chat_id'] = chat_id
     else:
         chat_id = session['chat_id']
-        chat.session_id = chat_id
+
+    # create a new client for this interaction if needed
+    chat.create_chat(chat_id=chat_id)
     
     try:
-        response = chat.run_turn(user_input=message)
+        response = chat.run_turn(
+            user_input=message,
+            chat_id=chat_id,
+        )
         
         # add the user message to the chat
         inp = ChatMessage(
             chat_id=chat_id,
+            file_id=file_id,
             role="user",
             content=message,
             created_at=time.time(),
@@ -879,6 +1031,7 @@ def send_message(message: str, auth=None, session=None):
 
         res = ChatMessage(
             chat_id=chat_id,
+            file_id=file_id,
             role="assistant",
             content=response,
             created_at=time.time(),
@@ -920,22 +1073,223 @@ def send_message(message: str, auth=None, session=None):
     except Exception as e:
         print(traceback.format_exc())
         return Alert(f"Error: {str(e)}", cls=AlertT.error)
+    
+@rt('/files/{file_id}/new-chat')
+def get(file_id: str, session=None):
+    """
+    Route handler for creating a new chat.
+    """
+    chat_id = generate_file_id()
+    session['chat_id'] = chat_id
+
+    # Messages container with explicit height calculation
+    return Div(
+        create_chat_messages_ui(file_id, chat_id), 
+        id="chat-container", 
+        cls="overflow-y-auto p-3 h-[calc(100vh-200px)]"
+    ), create_chat_input(file_id)
+
+@rt('/files/{file_id}/chat/{chat_id}')
+def get(file_id: str, chat_id: str, session=None):
+    """
+    Route handler for creating a new chat.
+    """
+    session['chat_id'] = chat_id
+    print(f"chat_id: {chat_id}")
+    print(f"file_id: {file_id}")
+
+    # Messages container with explicit height calculation
+    return (
+        # Messages container with explicit height calculation
+        Div(
+            create_chat_messages_ui(file_id, chat_id), 
+            id="chat-container", 
+            cls="overflow-y-auto p-3 h-[calc(100vh-200px)]"
+        ),
+        
+        # Input area positioned at bottom - preserved from original
+        create_chat_input(file_id),
+    )
+
+
+@rt('/files/{file_id}/chat-history')
+def get_chat_history(file_id: str, auth=None, request=None):
+    """
+    Retrieve and display chat history for a specific file.
+    
+    This endpoint supports the history tab in the interaction panel, providing
+    a list of previous conversations associated with the current document.
+    
+    Args:
+        file_id: The document identifier
+        auth: Authentication context
+        request: HTTP request object
+        
+    Returns:
+        HTMX-compatible content for the history tab panel
+    """
+    # Group messages by chat_id to create distinct conversation sessions
+    def get_file_chat_sessions(file_id: str):
+        """
+        Get all distinct chat sessions for a specific file with metadata.
+        Returns sessions sorted by most recent first.
+        """
+        # Get all messages for this file
+        all_messages = chats(f"file_id = ?", [file_id], order_by='created_at ASC')
+        
+        # Group messages by chat_id to identify distinct sessions
+        sessions = {}
+        for msg in all_messages:
+            if msg.chat_id not in sessions:
+                sessions[msg.chat_id] = {
+                    'id': msg.chat_id,
+                    'file_id': file_id,
+                    'messages': [],
+                    'first_message_time': msg.created_at,
+                    'last_message_time': msg.created_at,
+                    'message_count': 0
+                }
+            
+            # Add message to session
+            sessions[msg.chat_id]['messages'].append(msg)
+            sessions[msg.chat_id]['message_count'] += 1
+            
+            # Track conversation timespan
+            sessions[msg.chat_id]['first_message_time'] = min(
+                sessions[msg.chat_id]['first_message_time'], 
+                msg.created_at
+            )
+            sessions[msg.chat_id]['last_message_time'] = max(
+                sessions[msg.chat_id]['last_message_time'], 
+                msg.created_at
+            )
+        
+        # Convert to list and sort by most recent activity
+        session_list = list(sessions.values())
+        session_list.sort(key=lambda x: x['last_message_time'], reverse=True)
+        
+        return session_list
+    
+    # Component for displaying a conversation preview
+    def ChatSessionItem(session):
+        """Generate a preview card for a chat session with key information."""
+        # Format timestamps for display
+        from datetime import datetime
+        start_time = datetime.fromtimestamp(session['first_message_time'])
+        formatted_date = start_time.strftime("%b %d, %Y")
+        formatted_time = start_time.strftime("%I:%M %p")
+        
+        # Extract message previews for display
+        user_message = next((msg.content for msg in session['messages'] if msg.role == 'user'), None)
+        assistant_message = next((msg.content for msg in session['messages'] if msg.role == 'assistant'), None)
+        
+        # Truncate previews to reasonable length
+        if user_message and len(user_message) > 80:
+            user_message = user_message[:77] + "..."
+        if assistant_message and len(assistant_message) > 80:
+            assistant_message = assistant_message[:77] + "..."
+        
+        # Create the session preview card
+        return Card(
+            # Session metadata in header
+            CardHeader(
+                DivFullySpaced(
+                    H4(f"Conversation on {formatted_date}"),
+                    P(formatted_time, cls=TextPresets.muted_sm),
+                    cls="mb-1"
+                ),
+                P(f"{session['message_count']} messages", cls=TextPresets.muted_sm),
+                cls="pb-2"
+            ),
+            # Content preview
+            Div(
+                P(f"Q: {user_message}", cls=TextT.sm + " mb-1"),
+                P(f"A: {assistant_message}", cls=TextT.sm + " text-muted"),
+                cls="px-4 py-2 bg-secondary rounded-md"
+            ),
+            # Load conversation action
+            Button(
+                DivLAligned(UkIcon('message-circle', cls="mr-1"), "View Conversation"),
+                cls=ButtonT.primary + " mt-3",
+                hx_get=f"/files/{session['file_id']}/chat/{session['id']}",
+                hx_target="#current-chat",
+                hx_swap="innerHTML",
+                # swap the tab back to #current-chat to display the new chat
+                # Execute a more comprehensive tab switching sequence
+                    # Add onclick handler to switch tabs after HTMX completes
+                onclick="""setTimeout(function() { 
+
+                    // manually click on the first tab
+                    const firstTab = document.querySelector('ul.uk-tab > li:first-child > a');
+
+                    if (firstTab) {
+                        firstTab.click();
+                    
+                        // Focus the textarea after tab switch animation
+                        setTimeout(() => {
+                            const textarea = document.querySelector('#current-chat textarea#message');
+                            if (textarea) textarea.focus();
+                        }, 150);
+                    }; 
+
+                    // manually show the first tab
+                    UIkit.tab(document.querySelector('[uk-switcher]')).show(0); 
+                }, 100);"""
+            ),
+            cls="mb-3 hover:shadow-md transition-shadow"
+        )
+    
+    # Get all chat sessions for this file
+    chat_sessions = get_file_chat_sessions(file_id)
+    
+    # Handle empty state
+    if not chat_sessions:
+        return DivCentered(
+            UkIcon('history', cls='text-muted-foreground opacity-40 mb-3', height=32, width=32),
+            P("No previous conversations found", cls=TextPresets.muted_lg),
+            P("Start chatting with your document to create history", cls=TextPresets.muted_sm),
+            cls="h-[calc(100vh-210px)] flex-col p-4"
+        )
+    
+    # Create history list with consistent height calculations
+    return Div(
+        Div(
+            *[ChatSessionItem(session) for session in chat_sessions],
+            cls="overflow-y-auto p-4 space-y-4"
+        ),
+        cls="h-[calc(100vh-210px)] overflow-y-auto",
+        id="chat-history",
+    )
+
 
 @rt('/files/interact/{file_id}')
-def get(file_id: str):
+def get(file_id: str, session=None):
     """
     Route handler for viewing a file.
     
     Returns just the ViewerContent, not the entire FileViewerSection
     """
+    if 'chat_id' in session:
+        chat_id = session['chat_id']
+    else:
+        chat_id = generate_file_id()
+        session['chat_id'] = chat_id
+
     # Find the file metadata
     file_meta = get_file(file_id)
+
+    # load the embeddings for this file
+    print(f"Loading embeddings for file {file_id}...")
+    RAGEmbeds.set_file_id(file_id)
+    RAGEmbeds.load()
+    print(f"Embeddings loaded for file {file_id}")
+
     if not file_meta:
         return Div(
             P("File not found", cls="text-center text-error"),
             cls='flex h-[calc(100vh-200px)]'
         )
-    return FileViewerSection(file_id)
+    return FileViewerSection(file_id, chat_id)
 
 @rt('/files/load/{file_id}')
 def get(file_id: str):
@@ -990,50 +1344,19 @@ def home(auth=None, request=None, sess=None):
     Creates the main page for the Intelligent PDF agent. 6tdf
     """
     auth = "cck"
+    if 'chat_id' in sess:
+        sess.pop('chat_id')
+
     return Title(app_name), Div(
         Div(get_navbar(app_name=app_name), id="navbar"),
-        Grid(
             Div(
                 UploadSection(),
                 FileListSection(auth, request),
                 cls='col-span-1 tab-panel block md:block',
-            ),
-            Div(
-                FileViewerSection(),
-                cls='col-span-3 tab-panel hidden md:block',
-            ),
-            Div(
-                # 1. Proper header with enhanced visual presence
-                Div(
-                    H3("Interactions", cls="text-2xl font-bold"), 
-                    cls="p-3 border-b bg-secondary sticky top-0 z-20"
-                ),
-                
-                # 2. Flexbox layout for proper space allocation
-                Div(
-                    # 3. Messages container with explicit height calculation
-                    Div(
-                        create_chat_messages_ui([]), 
-                        id="chat-container", 
-                        cls="overflow-y-auto p-3 h-[calc(100vh-210px)]"
-                    ),
-                    
-                    # 4. Input area positioned at bottom
-                    create_chat_input(),
-                    
-                    cls="flex flex-col h-[calc(100vh-60px)]"
-                ),
-                cls='col-span-1 tab-panel hidden md:block mx-1 flex flex-col border shadow-md rounded-md z-10',
-            ),
-            # Grid configuration
-            cols_xl=5,
-            cols_lg=5,
-            cols_md=1,
-            cols_sm=1,
-            # gap=4,
-            cls="h-screen",
-        ),
-    )
+                id='main-content',
+            ),    
+        cls="h-screen",        
+        )
 
 
 serve(

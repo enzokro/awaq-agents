@@ -3,9 +3,9 @@ Tools for the simple PDF agent.
 """
 from pathlib import Path
 from claudette.core import tool
-from framework.embeddings import load_embeddings, load_models, matched_late_retrieval, EMBEDDING_MODEL_NAME
+from framework.embeddings import load_embeddings, load_models, matched_late_retrieval, EMBEDDING_MODEL_NAME, RAGEmbeds
 
-# load the precomputed embeddings
+
 embeds_path = Path("/Users/cck/projects/cck-agents/artifacts/sample_doc/embeddings_sample_doc/late_chunks.npz")
 embeds = load_embeddings(embeds_path)
 chunks, embeddings = embeds['chunks'], embeds['embeddings']
@@ -29,10 +29,15 @@ def find_relevant_content(
     ) -> str: # returns the relevant content with relevance scores
     """Use this tool to find relevant content in the user's document `chunks`. Directly plug in the `user_query` from your chat session into the semantic search."""
     print(f"Tool Execution: find_relevant_content() -> {user_query}")
-    top_chunks, top_sims = matched_late_retrieval(user_query, chunks, embeddings, tokenizer, model)
+    top_chunks, top_sims = matched_late_retrieval(
+        user_query,
+        RAGEmbeds.chunks,
+        RAGEmbeds.embeddings,
+        tokenizer,
+        model)
     context = []
     for idx, (chunk, sim) in enumerate(zip(top_chunks, top_sims)):
-        context.append(f"<context_{idx}>{chunk}</context_{idx}>\n<relevance_{idx}>{sim}</relevance_{idx}>")
+        context.append(f"<context_{idx}>{chunk}</context_{idx}>\n<score_{idx}>{sim}</score_{idx}>")
     return "\n".join(context)
 
 # group up the tools for easy import

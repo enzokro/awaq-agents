@@ -1,5 +1,5 @@
 """Processing documents for Agents."""
-
+from io import BytesIO
 import logging
 import pandas as pd
 import time
@@ -10,6 +10,7 @@ from docling.datamodel.base_models import FigureElement, InputFormat, Table
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc.document import DoclingDocument
+from docling.datamodel.base_models import DocumentStream
 
 from docling.datamodel.pipeline_options import (
     AcceleratorDevice,
@@ -119,12 +120,12 @@ def convert(
         input_doc_path: Path,
         converter_cls: Converter = FullConverter
     ):
-    print(f"Converting document: {input_doc_path.resolve()}")
+    print(f"Converting document...")
     start_time = time.time()
     converter = converter_cls()
     conv_res = converter.run(input_doc_path)
     end_time = time.time()
-    print(f'Document "{input_doc_path}" converted and processed in {end_time - start_time:.2f} seconds.')
+    print(f'Document converted and processed in {end_time - start_time:.2f} seconds.')
     return conv_res
 
 
@@ -194,3 +195,72 @@ def parse_document(
     doc.save_as_json(output_dir / f"{doc_filename}.json")
 
     return doc
+
+
+def parse_document_bytes(
+        input_doc: bytes, 
+        file_id: str,
+        output_dir: Path, 
+        converter_cls: Converter = FullConverter
+    ):
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # convert the document if it does not exist
+    output_json = output_dir / f"docling_document.json"
+    if not output_json.exists():
+        print(f"Converting document: {file_id}")
+        conv_res = convert(input_doc, converter_cls)
+        # save the result to a json file
+        conv_res.document.save_as_json(output_json)
+        doc = conv_res.document
+    else:
+        print(f"Loading document from previously saved JSON: {output_json.resolve()}")
+        doc = DoclingDocument.load_from_json(output_json)
+
+    # stores tables and picture
+    tables_elements = []
+    pictures_elements = []
+
+    # Save page images
+    for page_no, page in doc.pages.items():
+        page_no = page.page_no
+        page_image_filename = output_dir / f"page-{page_no}.png"
+        with page_image_filename.open("wb") as fp:
+            page.image.pil_image.save(fp, format="PNG")
+
+    # Save images of figures and tables
+    table_counter = 0
+    picture_counter = 0
+    for element, _level in doc.iterate_items():
+        if isinstance(element, TableItem):
+            tables_elements.append(element)
+            table_df: pd.DataFrame = element.export_to_dataframe()
+
+            table_counter += 1
+            element_image_filename = (
+                output_dir / f"table-{table_counter}.png"
+            )
+            with element_image_filename.open("wb") as fp:
+                element.get_image(doc).save(fp, "PNG")
+            # Save the table as csv
+            element_csv_filename = output_dir / f"table-{table_counter}.csv"
+            table_df.to_csv(element_csv_filename)
+
+        if isinstance(element, PictureItem):
+            pictures_elements.append(element)
+            picture_counter += 1
+            element_image_filename = (
+                output_dir / f"figure-{picture_counter}.png"
+            )
+            with element_image_filename.open("wb") as fp:
+                element.get_image(doc).save(fp, "PNG")
+
+    # Save markdown with externally referenced pictures
+    md_filename = output_dir / f"with_image_refs.md"
+    doc.save_as_markdown(md_filename, image_mode=ImageRefMode.REFERENCED)
+
+    # Save document as JSON so we can load it later
+    doc.save_as_json(output_dir / f"docling_document.json")
+
+    return doc
+

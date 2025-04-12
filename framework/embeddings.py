@@ -14,6 +14,7 @@ from docling_core.transforms.chunker import HierarchicalChunker, BaseChunker
 from docling_core.types.doc.document import DoclingDocument
 
 # --- Configuration ---
+ARTIFACTS_DIR = Path("/Users/cck/projects/cck-agents/artifacts")
 EMBEDDING_MODEL_NAME = 'nomic-ai/modernbert-embed-base'  # Efficient local model
 MAX_LEN = 8192
 
@@ -21,6 +22,27 @@ DEVICE = ("cuda" if torch.cuda.is_available() else
          ("mps"  if torch.backends.mps.is_available() else 
           "cpu"))
 
+
+class EmbeddingsLoader:
+    def __init__(self):
+        self.file_id = None
+        self.chunks = None
+        self.embeddings = None
+
+    def set_file_id(self, file_id: str):
+        self.file_id = file_id
+
+    def load(self):
+        """Load the embeddings from the file."""
+        if not self.file_id:
+            raise ValueError("File ID not set")
+        if (not self.chunks) and (not self.embeddings):
+            self.embeddings_path = Path(f"{ARTIFACTS_DIR}/{self.file_id}/embeddings/late_chunks.npz")
+            embeddings = np.load(self.embeddings_path)
+            self.chunks = embeddings['chunks']
+            self.embeddings = embeddings['embeddings']
+
+RAGEmbeds = EmbeddingsLoader()
 
 def flatten_meta(meta):
     """Flatten the meta data into a single string."""

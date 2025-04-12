@@ -25,7 +25,8 @@ class AgentRunner:
             log_dir: str = "results", 
             run_name_prefix: str = "interactive",
             use_toolloop: bool = True,
-            session_id: str = None
+            session_id: str = None,
+            chats: dict = {}
         ):
         """Initializes with a profile, sets up logging for the session."""
         self.profile = profile
@@ -34,7 +35,10 @@ class AgentRunner:
         self.log_path = get_log_path(log_dir, self.run_name)
         self.use_toolloop = use_toolloop
 
-        self.chat = profile.create_chat()
+        # manage multiple chats
+        self.chats = chats
+        # self.chat = profile.create_chat()
+
         print(f"AgentRunner initialized (Session: {self.session_id}), logging to {self.log_path}")
 
         self.turn_count = 0
@@ -78,14 +82,22 @@ class AgentRunner:
                     })
                     print(f"-- Tracer captured tool: {tool_name}({tool_args}) -> {tool_result[:100]}...") # Debug print
 
+    def create_chat(self, chat_id: str):
+        """Create a new chat and add it to the chats dictionary."""
+        if chat_id not in self.chats:
+            chat = self.profile.create_chat()
+            self.chats[chat_id] = chat
+        else:
+            print(f"Chat {chat_id} already exists")
 
-    def run_turn(self, user_input: str, **call_overrides) -> Optional[str]:
+
+    def run_turn(self, user_input: str, chat_id: str = None, **call_overrides) -> Optional[str]:
         """
         Processes a single turn of user input using the persistent chat instance.
         Uses toolloop to handle potential tool calls.
         Logs the details of this specific turn, including tool calls.
         """
-        assert self.chat, "No Chat instance found in run_turn"
+        self.chat = self.chats[chat_id]
 
         self.turn_count += 1
         interaction_id = f"{self.session_id}_turn_{self.turn_count}"

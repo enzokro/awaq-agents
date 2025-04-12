@@ -9,6 +9,7 @@ dependencies = [
     "colbert-ai>=0.2.21",
     "docling>=2.15.1",
     "fastcore>=1.8.0",
+    "gaspard>=0.0.1",
     "ipykernel>=6.29.5",
     "ipywidgets>=8.1.5",
     "jupyter>=1.1.1",

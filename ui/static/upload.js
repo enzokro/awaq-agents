@@ -5,6 +5,19 @@ const progressBar = me('#upload-progress');
 const progressContainer = me('#progress-container');
 const statusText = me('#upload-status');
 
+// Add this at the top of your upload.js to help with debugging
+document.addEventListener('htmx:beforeRequest', function(event) {
+    console.log("HTMX request starting:", event.detail);
+});
+
+document.addEventListener('htmx:afterRequest', function(event) {
+    console.log("HTMX request completed:", event.detail);
+});
+
+document.addEventListener('htmx:responseError', function(event) {
+    console.error("HTMX request error:", event.detail);
+});
+
 // Helper function to get auth data from cookies or local storage
 function getAuthData() {
     // Try to get auth from cookie
@@ -100,35 +113,35 @@ function uploadFiles(files) {
             // Keep progress bar visible but change to indeterminate style
             progressBar.removeAttribute('value'); // Makes it indeterminate
 
-            // Don't hide the progress container - it now indicates processing
-            // Instead, the FileItem component will handle the processing state
-            
-            // // Hide progress after a delay
-            // setTimeout(() => {
-            //     progressContainer.classAdd('hidden');
-            //     progressBar.value = 0;
-                
-            //     // Always reset and ensure file input is hidden
-            //     fileInput.value = '';
-            //     fileInput.classAdd('hidden');
-                
-            //     // Trigger the uploaded event to refresh file list
-            //     // This uses the HTMX attributes we set in the HTML
-            //     dropzone.send('uploaded');
-                
-            // }, 1000);
-
             // Always reset file input
             fileInput.value = '';
             fileInput.classAdd('hidden');
             
-            // Trigger the uploaded event to refresh file list
-            // The file list will now show items with processing status
-            // KEY FIX: Add a small delay before triggering the file list refresh
-            setTimeout(() => {
-                // Trigger the uploaded event to refresh file list
-                dropzone.send('uploaded');
-            }, 300); // 300ms delay gives server time to persist the file
+            // // Use htmx.trigger for reliable event firing
+            // console.log("Triggering HTMX event 'fileUploaded'");
+            // htmx.trigger(document.body, 'fileUploaded');
+            
+            // // Debug: Let's log what elements would respond to this event
+            // console.log("Elements listening for fileUploaded:", 
+            //             document.querySelectorAll('[hx-trigger*="fileUploaded"]'));
+
+            // Wait for any existing HTMX requests to complete
+            setTimeout(function() {
+                // Check if the file list element still has the htmx-request class
+                const fileList = document.getElementById('file-list');
+                if (fileList.classList.contains('htmx-request')) {
+                    console.log("Element still processing another request, waiting...");
+                    // Wait a bit longer before trying again
+                    setTimeout(function() {
+                        console.log("Triggering fileUploaded after waiting");
+                        htmx.trigger(document.body, 'fileUploaded');
+                    }, 500);
+                } else {
+                    console.log("Triggering fileUploaded");
+                    htmx.trigger(document.body, 'fileUploaded');
+                }
+            }, 100);
+            
 
         } else {
             // Error
@@ -145,6 +158,11 @@ function uploadFiles(files) {
             }, 1000);
         }
     });
+
+    // // Reset text after upload with loadend events
+    // xhr.addEventListener('loadend', () => {
+    //     statusText.textContent = 'File uploaded! Ready to upload another.';
+    // });
     
     // Handle errors
     xhr.addEventListener('error', () => {

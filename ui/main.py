@@ -26,9 +26,10 @@ load_dotenv()
 # from profiles.agents.example_agent.agent import profile as agent_profile
 from profiles.agents.simple_pdf_rag_agent.agent import profile as agent_profile
 # from profiles.agents.document_summarizer.agent import profile as summarizer_profile
-from framework.agent_runner import AgentRunner
+# from framework.agent_runner import AgentRunner
+from framework.gaspard_runner import GaspardRunner
 
-chat = AgentRunner(
+chat = GaspardRunner(
     profile=agent_profile,
     use_toolloop=True,
 )
@@ -100,18 +101,16 @@ pdf_scripts = [
     Script(src='/static/pdfjs-helpers/pdf-initializer.js', type="module"),
 ]
 
-# for helper scripts
-helper_scripts = [
-    Script(src='/static/helpers.js'),
-]
 
+# sse to emit transformed images
+sse_script = Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js")
 
 hdrs = [
     theme_headers, 
     full_screen_style, 
     favicon_headers,
     *pdf_scripts,
-    # *helper_scripts,
+    sse_script,
 ]
 
 # create the app
@@ -120,6 +119,12 @@ app_name = os.getenv("APP_NAME", "InfraRead 2.0")
 app, rt = fast_app(
     hdrs=hdrs,
 )
+
+# queue for user requests
+msg_queue = asyncio.Queue()
+
+# shutdown event
+shutdown_event = signal_shutdown()
 
 ### COMPONENTS
 
@@ -167,15 +172,17 @@ def ChatMessageUI(role, content):
     colors = {
         'system': {'bg': 'bg-gray-200', 'text': 'text-gray-800'},
         'user': {'bg': 'bg-blue-500', 'text': 'text-white'},
-        'InfraAI': {'bg': 'bg-gray-200', 'text': 'text-gray-800'}
+        'infraai': {'bg': 'bg-gray-200', 'text': 'text-gray-800'}
     }
+    if role.lower() == 'assistant':
+        role = 'InfraAI'
     style = colors.get(role.lower(), colors['system'])
     
     align_cls = 'justify-end' if role.lower() == 'user' else 'justify-start'
     
     return Div(cls=f'flex {align_cls} mb-4')(
         Div(cls=f'{style["bg"]} {style["text"]} rounded-2xl p-4 max-w-[80%]')(
-            Strong(role.capitalize(), cls='text-sm font-semibold tracking-wide'),
+            Strong(role, cls='text-sm font-semibold tracking-wide'),
             Div(content, cls='mt-2')
         )
     )
@@ -185,31 +192,62 @@ def create_chat_messages_ui(file_id: str = None, chat_id: str = None):
     
     # Determine if we're in empty state or have messages
     messages = get_messages(file_id, chat_id)
-    print(f"messages: {messages}")
     is_empty = not messages
     
-    # Prepare message content
-    message_content = (
-        # Empty state content
-        DivCentered(
-            UkIcon('message-circle', cls='text-muted-foreground opacity-40 mb-3', height=40, width=40),
-            P("Interact with your document", cls=TextPresets.muted_lg),
-            cls="flex-col",
-            id="empty-placeholder"  # Specific ID for the placeholder content
-        ) if is_empty else
-        # Message list content - when messages exist
-        Div(
-            *[ChatMessageUI(msg.role, msg.content) for msg in messages],
-            cls="h-full space-y-4"
-        )
-    )
     
-    # Return container with appropriate ID based on state
-    return Div(
-        message_content,
-        id="message-list",  # Single container for both states
+    if is_empty:
+        # For empty state, create a placeholder that will be removed by the "empty" event
+        contents = [
+            DivCentered(
+                UkIcon('message-circle', cls='text-muted-foreground opacity-40 mb-3', height=40, width=40),
+                P("Interact with your document", cls=TextPresets.muted_lg),
+                cls="flex-col",
+                id="empty-placeholder",
+                sse_swap="empty",  # This will receive the empty event
+                hx_swap="outerHTML",
+            ),
+            # Auto-scroll script
+            Script("""
+                setTimeout(function() {
+                    const container = document.getElementById('chat-container');
+                    container.scrollTop = container.scrollHeight;
+                }, 100);
+            """),
+            # Add an empty message container that will receive new messages
+            Div(
+                id="messages-container",
+                sse_swap="message",  # This will receive message events
+                hx_swap="beforeend",
+                cls="h-full space-y-4",
+            ),
+        ]
+    else:
+        # If we already have messages, just create a container with existing messages
+        contents = Div(
+                # Auto-scroll script
+                Script("""
+                    setTimeout(function() {
+                        const container = document.getElementById('chat-container');
+                        container.scrollTop = container.scrollHeight;
+                    }, 100);
+                """),
+                *[ChatMessageUI(msg.role, msg.content) for msg in messages],
+                id="messages-container",
+                sse_swap="message",  # This will receive message events
+                hx_swap="beforeend",
+                cls="h-full space-y-4",
+            )
+    
+    # Create the container that will hold all messages
+    container = Div(
+        *contents,
+        id="message-list",  # Main container ID
+        hx_ext="sse",
+        sse_connect="/messages",
         cls=f"{'' if is_empty else 'space-y-4 pb-4'}"
     )
+    return container
+
     
 def create_chat_input(file_id: str = None):
     """Creates an enhanced chat input that handles state transitions efficiently"""
@@ -232,10 +270,11 @@ def create_chat_input(file_id: str = None):
                 ),
                 DivLAligned(
                     Loading(
-                        htmx_indicator=True, 
+                        # htmx_indicator=True, 
                         type=LoadingT.spinner, 
                         cls="ml-2", 
-                        id="detection-loading"
+                        id="message-loading",
+                        style="display: none;",  # Initially hidden
                     ),
                     Button(
                         DivLAligned(
@@ -254,8 +293,8 @@ def create_chat_input(file_id: str = None):
                 cls="items-end w-full"
             ),
             hx_post="/send",
-            hx_target="#message-list",  # Target only the message list
-            hx_swap="innerHTML",  # Append to end of list
+            hx_swap="none",  # Append to end of list
+            hx_indicator="#message-loading",
             id="chat-form",
             cls="mb-0 w-full"
         ),
@@ -320,10 +359,11 @@ def UploadSection() -> FT:
             hx_get='/files',
             hx_target='#file-list',
             hx_swap="innerHTML",
-            hx_trigger='uploaded',
-            # Add debugging attributes 
+            hx_trigger='uploaded from:body',
+            hx_swap_oob='true',
+            # # Add debugging attributes 
             hx_indicator='#file-list-loading',
-            hx_ext='json-enc',
+            # hx_ext='json-enc',
             # Add script to include auth headers in uploads
             data_include_auth="true"
         ),       
@@ -333,15 +373,15 @@ def UploadSection() -> FT:
 
 def FileItem(file: FileModel) -> FT:
     """
-    Generate a compact yet elegant UI component for a single file.
+    Generate an elegant card-based UI component for a single file.
     
-    Designed to work within constrained width (1/5 of screen width).
+    Redesigned to better utilize space and emphasize primary actions.
     
     Args:
         file: The file metadata to display
         
     Returns:
-        A compact, well-styled file item component
+        A well-styled file item card component
     """
     # Determine file icon based on extension
     extension = file.name.split('.')[-1].lower() if '.' in file.name else ''
@@ -353,78 +393,98 @@ def FileItem(file: FileModel) -> FT:
     }
     icon = icon_map.get(extension, 'file')
     
-    # Truncate filename if too long (prevent overflow)
-    display_name = file.name
-    if len(display_name) > 18:
-        display_name = display_name[:15] + '...'
-
     # Add processing indicator
     is_processing = getattr(file, 'status', None) == 'processing'
-
     
-    return Div(
-        # First row: Filename and icon
-        DivLAligned(
-            UkIcon(icon, cls='text-primary flex-shrink-0 mr-2', height=16, width=16),
-            P(display_name, cls=TextT.medium + ' truncate', title=file.name),
-            cls='mb-1'
-        ),
-        
-        # Second row: File metadata
-        DivLAligned(
-            P(file.upload_time_formatted, cls=TextPresets.muted_sm),
-            P("•", cls=TextPresets.muted_sm + ' mx-1'),
-            P(file.size_formatted, cls=TextPresets.muted_sm),
-            cls='text-xs'
-        ),
-        
-        # Third row: Action buttons
-        DivFullySpaced(
-            DivLAligned(
+    # Create status badge similar to Ticket example's StatusBadge
+    status_badge = None
+    if is_processing:
+        status_badge = Alert(
+            DivLAligned(UkIcon('loader-2', cls='animate-spin mr-1'), "Processing..."),
+            cls=(AlertT.warning, "shadow-sm", "py-1", "px-2", "w-auto")
+        )
+    
+    return Card(
+        # Card body with file details
+        Div(
+            # File metadata row - inspired by TeamMembers card style (lines 132-139)
+            DivFullySpaced(
+                DivLAligned(
+                    UkIcon('calendar', height=14, width=14, cls='text-muted-foreground'),
+                    P(file.upload_time_formatted, cls=TextPresets.muted_sm),
+                    P("•", cls=TextPresets.muted_sm + ' mx-1'),
+                    UkIcon('hard-drive', height=14, width=14, cls='text-muted-foreground mr-1'),
+                    P(file.size_formatted, cls=TextPresets.muted_sm),
+                    cls='text-xs'
+                ),
+                # Processing status on right - similar to StatusBadge in Ticket example
+                status_badge if is_processing else None,
+            ),
+            
+            # Clear separation like ShareDocument card line 153
+            DividerLine(),
+            
+            # Action buttons - similar to footer styling in CookieSettings card
+            DivFullySpaced(
                 Button(
-                    UkIcon('trash-2', height=14, width=14), 
-                    cls=ButtonT.ghost + ' text-xs px-2 py-1 h-7 text-default border rounded-md',
-                    hx_delete=f'/files/{file.id}',
+                    UkIcon('trash-2', height=16, width=16, cls='mr-1'), 
+                    "Delete",
+                    cls=ButtonT.ghost + ' text-xs px-3 py-1 h-8 text-default border rounded-md',
+                    hx_delete=f'/files/{file.id}' if not is_processing else None,
                     hx_confirm=f'Are you sure you want to delete {file.name}?',
                     hx_target='#file-list',
                     disabled=is_processing,
                 ),
-                 cls='mt-2 space-x-1'
-            ),
-            DivRAligned(
-                # Show spinner during processing
-                Loading(cls=LoadingT.spinner + " mr-2") if is_processing else None,
-                P("Processing...", cls=TextPresets.muted_sm) if is_processing else None,
-            
-                Button(
-                    UkIcon('download', height=14, width=14), 
-                    cls=ButtonT.secondary + ' text-xs px-2 py-1 h-7 border rounded-md',
-                    hx_get=f'/files/{file.id}/download',
-                    hx_target='_blank',
-                    disabled=is_processing,
+                DivLAligned(
+                    Button(
+                        UkIcon('download', height=16, width=16, cls='mr-1'), 
+                        "Download",
+                        cls=ButtonT.secondary + ' text-xs px-3 py-1 h-8 border rounded-md',
+                        hx_get=f'/files/{file.id}/download' if not is_processing else None,
+                        hx_target='_blank',
+                        disabled=is_processing,
+                    ),
+                    cls='mr-2'
                 ),
-                Button(
-                    'Interact', 
-                    cls=ButtonT.primary + ' text-lg px-2 py-1 h-7 border rounded-md',
-                    hx_get=f'/files/interact/{file.id}',
-                    hx_target='#main-content',
-                    hx_swap="innerHTML",
-                    hx_push_url='true',
-                    disabled=is_processing,
-                    # onclick="switchTab(1); setTimeout(function() { resetLayout(); }, 100);",
-                ),
-                cls="mt-2 space-x-2"
             ),
+            cls='p-2'
         ),
         
+        # Header with file icon and name - based on Ticket Example's card header pattern
+        header=CardHeader(
+            DivLAligned(
+                UkIcon(icon, cls='text-primary flex-shrink-0 mr-2', height=24, width=24),
+                P(file.name, cls=TextT.medium + ' truncate font-semibold', title=file.name),
+            ),
+            cls='pb-2'
+        ),
+        
+        # Footer with prominent interact button - inspired by CookieSettings card footer (line 136)
+        footer=CardFooter(
+            Button(
+                UkIcon('microscope', height=18, width=18, cls='mr-2' if not is_processing else 'hidden'),
+                Loading(cls=LoadingT.spinner + " mr-2") if is_processing else None,
+                "Interact", 
+                cls=ButtonT.primary + ' w-full py-2',
+                hx_get=f'/files/interact/{file.id}' if not is_processing else None,
+                hx_target='#main-content',
+                hx_swap="innerHTML",
+                hx_push_url='true',
+                disabled=is_processing,
+            ),
+            cls='pt-0'
+        ),
+        
+        # Preserve original ID and add hover effect
         id=f'file-{file.id}',
-        cls='file-item p-3 hover:bg-secondary border border-slate-200 rounded-md mb-2',
-        # Add polling for processing status
+        cls=CardT.hover + ' file-item mb-4',
+        
+        # Preserve HTMX polling for processing status
         hx_get=f'/files/{file.id}/status' if is_processing else None,
         hx_trigger="every 4s" if is_processing else None,
         hx_swap="outerHTML",
     )
-
+    
 @patch
 def __ft__(self:FileModel):
     """Render FileModel as FT component for HTMX updates"""
@@ -451,59 +511,84 @@ def FileListSection(auth, request=None) -> FT:
     # Query files ordered by most recent first
     all_files = get_user_files(user) if user is not None else []
 
-    if not all_files:
-        file_items = DivCentered(
-            UkIcon('file-x', cls='text-muted-foreground opacity-50 mb-2', height=32, width=32),
-            P("No files uploaded yet", cls=TextPresets.muted_sm),
-            cls='py-8'
-        )
-    else:
-        file_items = Div(
-            *[FileItem(file) for file in all_files]
-        )
-    
     # Build the auth data for HTMX headers
     auth_value = auth if isinstance(auth, str) else None
     if user and isinstance(user, dict) and 'user_id' in user:
         auth_value = user['user_id']
-    
-    return Card(
-        # File list with proper overflow handling
-        Div(
-            # Add a loading indicator for HTMX requests
+
+    file_items = [
+        # Loading indicator styled similarly to Ticket Example
+        Loading(
+            type=LoadingT.spinner,
+            cls="mx-auto my-6 hidden",
+            id="file-list-loading"
+        ),
+        
+    ]
+
+    # Create file items content with loading indicator
+    if not all_files:
+        file_items += [
+            # Empty state inspired by Card Example empty states
+            DivCentered(
+                UkIcon('file-x', cls='text-muted-foreground opacity-50 mb-4', height=48, width=48),
+                H4("No files uploaded yet", cls='mb-2'),
+                P("Upload files to get started with your analysis", cls=TextPresets.muted_sm),
+                cls='py-12'
+            ),
+        ]
+    else:
+        file_items += [
+            # Loading indicator
             Loading(
                 type=LoadingT.spinner,
-                cls="mx-auto my-4 hidden",
+                cls="mx-auto my-6 hidden",
                 id="file-list-loading"
             ),
             
-            file_items,
-            id='file-list',
-            cls='space-y-2'
-        ),
+            # Grid layout inspired by Card Example (line 190)
+            Grid(
+                *[FileItem(file) for file in all_files],
+                cols_md=1, cols_lg=2, cols_xl=3,
+                gap=4
+            ),
+        ]
+    
+    file_items = Div(
+        *file_items,
+        id='file-list',
+        cls='space-y-4'
+    )
+    
+    # Preserve the Card container structure from original
+    return Card(
+        file_items,
+
+        # Preserve all HTMX attributes
+        hx_get='/files',
+        hx_trigger="fileUploaded from:body",
+        hx_swap="innerHTML",
+        hx_indicator='#file-list-loading',
 
         id='file-list-container',
         cls='overflow-y-auto max-h-[calc(100vh-250px)] w-full',
 
-        # Header with refresh button
+        # Enhanced header inspired by Ticket Example's heading pattern
         header=CardHeader(
             DivFullySpaced(
                 H3('Files', cls='text-2xl font-bold'),
                 Button(
-                    UkIcon('refresh-cw', cls='mr-1', height=16, width=16), 
-                    P('Refresh', cls="text-md"), 
-                    cls=ButtonT.ghost + ' rounded-md border',
-                    # Remove trailing slash to prevent mixed content issues on Railway
+                    UkIcon('refresh-cw', cls='mr-2', height=16, width=16), 
+                    "Refresh", 
+                    cls=ButtonT.ghost + ' rounded-md border px-3 py-1',
                     hx_get='/files', 
                     hx_target='#file-list',
                     hx_swap="innerHTML",
                     hx_indicator='#file-list-loading',
-                    # Add auth header to ensure authentication is passed
                     hx_headers=json.dumps({"X-Auth": auth_value}) if auth_value else None,
                 ),
                 cls='mt-1'
             ),
-            # P(f'{len(all_files)} {"files" if all_files and len(all_files) > 1 else "file"}', cls=TextPresets.muted_sm) if all_files else "No files found",
             DividerLine(),
             cls='py-1'
         ),
@@ -823,6 +908,7 @@ def FileViewerSection(file_id=None, chat_id=None):
 @rt('/files')
 def get(auth=None, request=None):
     """Return just the file list content for HTMX refreshes"""
+    print(f"GOT FILES REQUEST! REQUEST: {request.url, request.headers, request.client}")
 
     # Check for auth in HTMX headers first (for refresh requests)
     if request and request.headers.get('X-Auth'):
@@ -854,14 +940,35 @@ def get(auth=None, request=None):
     
     all_files = get_user_files(user)
     
+    # Return a structure that includes the loading indicator
     if not all_files:
-        return DivCentered(
-            UkIcon('file-x', cls='text-muted-foreground opacity-50 mb-2', height=32, width=32),
-            P("No files uploaded yet", cls=TextPresets.muted_sm),
-            cls='py-8'
+        return Div(
+            # Include loading indicator
+            Loading(
+                type=LoadingT.spinner,
+                cls="mx-auto my-4 hidden",
+                id="file-list-loading"
+            ),
+            
+            DivCentered(
+                UkIcon('file-x', cls='text-muted-foreground opacity-50 mb-2', height=32, width=32),
+                P("No files uploaded yet", cls=TextPresets.muted_sm),
+                cls='py-8'
+            ),
+            cls='space-y-2'
         )
     else:
-        return Div(*[FileItem(file) for file in all_files], cls='space-y-2')
+        return Div(
+            # Include loading indicator
+            Loading(
+                type=LoadingT.spinner,
+                cls="mx-auto my-4 hidden",
+                id="file-list-loading"
+            ),
+            
+            *[FileItem(file) for file in all_files],
+            cls='space-y-2'
+        )
 
 @rt('/files/upload')
 async def post(auth=None, file: List[UploadFile] = None, request=None):
@@ -945,7 +1052,8 @@ async def post(auth=None, file: List[UploadFile] = None, request=None):
             responses.append(FileItem(file_meta))
 
             # Start processing asynchronously
-            asyncio.create_task(process_document(content, file_id, output_path, file_meta))
+            process_task = asyncio.create_task(process_document(content, file_id, output_path, file_meta))
+            process_task
       
         except Exception as e:
             # Log the error for debugging
@@ -953,34 +1061,35 @@ async def post(auth=None, file: List[UploadFile] = None, request=None):
 
     
     # Return the file item components
-    # return responses
     return responses
 
 async def process_document(content, file_id, output_path, file_meta):
     """Extracts the text and figures from a PDF, then embeds the text for now with late chunking."""
     try:
+        # Use loop.run_in_executor for CPU-intensive operations
+        loop = asyncio.get_event_loop()
+        
         # Create a BytesIO object from the bytes
         buf = BytesIO(content)
-
-        # Create a DocumentStream with a name and the BytesIO stream
         doc = DocumentStream(name="document.pdf", stream=buf)
-
-        # parse the document
-        document = parse_document_bytes(
-            doc,
-            file_id,
-            output_path,
+        
+        # Run the CPU-intensive operations in a thread pool
+        document = await loop.run_in_executor(
+            None,  # Use default executor
+            lambda: parse_document_bytes(doc, file_id, output_path)
         )
         print(f"Document parsed for file {file_id}")
-
-        # embed the document
-        embed_docling_json(document, output_path / f"embeddings")
+        
+        # Continue with more CPU-intensive operations in a thread pool
+        await loop.run_in_executor(
+            None,
+            lambda: embed_docling_json(document, output_path / "embeddings")
+        )
         print(f"Embeddings saved for file {file_id}")
-
-        # make file is ready
+        
+        # Update file status
         file_meta.status = 'ready'
         files.update(file_meta)
-
     except Exception as e:
         print(f"Error processing document: {traceback.format_exc()}")
         file_meta.status = 'error'
@@ -996,7 +1105,7 @@ def get(file_id: str):
     
 
 @rt('/send', methods=['POST'])
-def send_message(message: str, file_id: str = None, auth=None, session=None):
+async def send_message(message: str, file_id: str = None, auth=None, session=None):
     if not message.strip():
         return Div()
     
@@ -1011,68 +1120,91 @@ def send_message(message: str, file_id: str = None, auth=None, session=None):
     else:
         chat_id = session['chat_id']
 
-    # create a new client for this interaction if needed
-    chat.create_chat(chat_id=chat_id)
-    
-    try:
-        response = chat.run_turn(
-            user_input=message,
-            chat_id=chat_id,
-        )
-        
-        # add the user message to the chat
-        inp = ChatMessage(
-            chat_id=chat_id,
-            file_id=file_id,
-            role="user",
-            content=message,
-            created_at=time.time(),
-        )
+    print(f"Sending message: {message}, chat_id: {chat_id}, file_id: {file_id}")
+    await msg_queue.put((message, chat_id, file_id))
+    print(f"Message sent: {message}, chat_id: {chat_id}, file_id: {file_id}")
 
-        res = ChatMessage(
-            chat_id=chat_id,
-            file_id=file_id,
-            role="assistant",
-            content=response,
-            created_at=time.time(),
-        )
+# sends the generated images in an sse stream
+async def handle_messages():
+    """Generates SSE events with chat message responses."""
+    first_message = True
+    while not shutdown_event.is_set():
+        # pop from the queue
+        message, chat_id, file_id = await msg_queue.get()
 
-        add_message(inp)
-        add_message(res)
+        # create a new client for this interaction if needed
+        chat.create_chat(chat_id=chat_id)
+        
+        try:
+            # For first message, send an empty div to replace the placeholder
+            if first_message:
+                # Empty Div to replace the placeholder
+                yield sse_message(Div(), event="empty")
+                first_message = False
+                # Add a small delay to ensure browser processes this
+                await asyncio.sleep(0.1)
+            
+            # Add the user message to the chat
+            inp = ChatMessage(
+                chat_id=chat_id,
+                file_id=file_id,
+                role="User",
+                content=message,
+                created_at=time.time(),
+            )
+            add_message(inp)
+            user_msg = ChatMessageUI(inp.role, inp.content)
+            yield sse_message(user_msg, event="message")
 
-        user_msg = ChatMessageUI(inp.role, inp.content)
-        ai_msg = ChatMessageUI(res.role, res.content)
+            # Show the loading indicator via JavaScript
+            yield sse_message(
+                Script("""
+                    // Show loading indicator
+                    document.getElementById('message-loading').style.display = 'inline-block';
+                """), 
+                event="message"
+            )
+            
+            # Add a small delay to ensure browser processes this
+            await asyncio.sleep(0.1)
 
-        # Get all messages for this chat
-        all_messages = get_chat_messages(chat_id)
-        
-        # Create the updated message list content
-        updated_messages = Div(
-            *[ChatMessageUI(msg.role, msg.content) for msg in all_messages],
-            cls="space-y-4",
-            id="message-list-content"
-        )
-        
-        # Add scroll script
-        scroll_script = Script("""
-            setTimeout(function() {
-                const container = document.getElementById('chat-container');
-                container.scrollTop = container.scrollHeight;
-            }, 100);
-        """)
-        
-        # Return the updated message list
-        return Div(
-            updated_messages,
-            scroll_script,
-            id="message-list",  # Match the target ID
-            cls="space-y-4 pb-4"
-        )
-        
-    
-    except Exception as e:
-        print(traceback.format_exc())
-        return Alert(f"Error: {str(e)}", cls=AlertT.error)
+            # Get response from the chat system
+            response = chat.run_turn(
+                user_input=message,
+                chat_id=chat_id,
+            )
+
+            # Hide loading indicator before sending the response
+            yield sse_message(
+                Script("""
+                    // Hide loading indicator
+                    document.getElementById('message-loading').style.display = 'none';
+                """), 
+                event="message"
+            )
+
+            # Add the assistant message to the chat
+            res = ChatMessage(
+                chat_id=chat_id,
+                file_id=file_id,
+                role="InfraAI",
+                content=response,
+                created_at=time.time(),
+            )
+            add_message(res)
+            ai_msg = ChatMessageUI(res.role, res.content)
+            yield sse_message(ai_msg, event="message")
+
+        except Exception as e:
+            print(f"Error processing message: {traceback.format_exc()}")
+            yield sse_message(Alert(f"Error: {str(e)}", cls=AlertT.error), event="message")
+
+
+# SSE endpoint
+@rt("/messages")
+async def messages():
+    return EventStream(handle_messages())
+
     
 @rt('/files/{file_id}/new-chat')
 def get(file_id: str, session=None):
@@ -1359,6 +1491,7 @@ def home(auth=None, request=None, sess=None):
         )
 
 
+# run the app
 serve(
     reload=True,
 )
